@@ -1,6 +1,6 @@
 # Configure the AWS Provider
 provider "aws" {
-  region = var.aws_region
+  region = "ap-south-1"
 }
 
 # Create an S3 bucket for your application assets
@@ -21,16 +21,42 @@ resource "aws_s3_bucket_versioning" "versioning" {
   }
 }
 
-# Create an ECR repository for Docker images
-resource "aws_ecr_repository" "app_repository" {
-  name = "${var.app_name}-${var.environment}"
-  
-  image_scanning_configuration {
-    scan_on_push = true
+# Configure website hosting (optional)
+resource "aws_s3_bucket_website_configuration" "website" {
+  bucket = aws_s3_bucket.app_bucket.id
+
+  index_document {
+    suffix = "index.html"
   }
-  
-  tags = {
-    Name        = "${var.app_name}-${var.environment}"
-    Environment = var.environment
+
+  error_document {
+    key = "error.html"
   }
+}
+
+# Make bucket content publicly accessible (optional - only if hosting a public website)
+resource "aws_s3_bucket_public_access_block" "public_access" {
+  bucket = aws_s3_bucket.app_bucket.id
+
+  block_public_acls       = false
+  block_public_policy     = false
+  ignore_public_acls      = false
+  restrict_public_buckets = false
+}
+
+resource "aws_s3_bucket_policy" "public_read" {
+  bucket = aws_s3_bucket.app_bucket.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid       = "PublicReadGetObject"
+        Effect    = "Allow"
+        Principal = "*"
+        Action    = "s3:GetObject"
+        Resource  = "${aws_s3_bucket.app_bucket.arn}/*"
+      },
+    ]
+  })
+  depends_on = [aws_s3_bucket_public_access_block.public_access]
 }
