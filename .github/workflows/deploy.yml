@@ -5,7 +5,8 @@ on:
       - main
 jobs:
   deploy:
-    uses: sridhar7601/infrastructure-repo/.github/workflows/terraform-s3.yml@main
+    uses: sridhar7601/infrastructure-repo/.github/workflows/terraform-docker.yml@main
+
     with:
       environment: production
       app_name: my-app
