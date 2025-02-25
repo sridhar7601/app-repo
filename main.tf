@@ -1,6 +1,6 @@
 # Configure the AWS Provider
 provider "aws" {
-  region = "ap-south-1"
+  region = var.aws_region
 }
 
 # Create an S3 bucket for your application assets
@@ -21,7 +21,7 @@ resource "aws_s3_bucket_versioning" "versioning" {
   }
 }
 
-# Configure website hosting (optional)
+# Configure website hosting
 resource "aws_s3_bucket_website_configuration" "website" {
   bucket = aws_s3_bucket.app_bucket.id
 
@@ -34,7 +34,7 @@ resource "aws_s3_bucket_website_configuration" "website" {
   }
 }
 
-# Make bucket content publicly accessible (optional - only if hosting a public website)
+# Make bucket content publicly accessible
 resource "aws_s3_bucket_public_access_block" "public_access" {
   bucket = aws_s3_bucket.app_bucket.id
 
