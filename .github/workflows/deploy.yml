@@ -1,15 +1,14 @@
 name: Deploy Application
-
 on:
   push:
     branches:
       - main
-
 jobs:
   deploy:
     uses: sridhar7601/infrastructure-repo/.github/workflows/terraform-docker.yml@main
     with:
       environment: production
+      enable_docker: false  # Set to true only when you have a Dockerfile
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
